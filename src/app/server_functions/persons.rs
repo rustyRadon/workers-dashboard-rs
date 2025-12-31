@@ -1,9 +1,8 @@
-use crate::app::{models::person::Person, models::person::AddPersonRequest };
+use crate::app::{models::person::Person, models::person::AddPersonRequest};
 use leptos::{prelude::ServerFnError, *};
-use serde::*;
 
 #[server(GetPerson, "/api")]
-pub async fn  get_persons() -> Result<Vec<Person>, ServerFnError>{
+pub async fn get_persons() -> Result<Vec<Person>, ServerFnError> {
     let persons = retrieve_all_persons().await;
     Ok(persons)
 }
@@ -26,10 +25,9 @@ pub async fn add_person(add_person_request: AddPersonRequest) -> Result<Person, 
     }
 }
 
-#[server(Add_person, "/api")]
+use cfg_if::cfg_if;
 
-cfg_if::cfg_if! {
-
+cfg_if! {
     if #[cfg(feature = "ssr")] {
         use crate::app::db::database;
         use chrono::{DateTime, Local};
@@ -43,23 +41,31 @@ cfg_if::cfg_if! {
             }
         }
 
-        pub async add_new_person<T>(name:  T, title: T, level: T, compensation: i32)
-            -> Option<Person> where T: Into<String> {
-                let mut buffer = Uuid::encode_buffer();
-                let uuid = Uuid::new_v4().simple().encode_lower(&mut buffer);
+        // Fixed: Added return type and correct function name
+        pub async fn add_new_person<T>(
+            name: T, 
+            title: T, 
+            level: T, 
+            compensation: i32
+        ) -> Option<Person> 
+        where 
+            T: Into<String> 
+        {
+            let uuid = Uuid::new_v4();
+            let uuid_string = uuid.to_string();
 
-                let current_now = Local::now();
-                let current_formatted = current_now.to_string();
+            let current_now = Local::now();
+            let current_formatted = current_now.to_string();
 
-                let new_person = Person::new(
-                    String::from(Uuid),
-                    name.into(),
-                    title.into(),
-                    level.into(),
-                    compensation,
-                    current_formatted,
-                );
-                database::add_person(new_person).await
-            }
+            let new_person = Person::new(
+                uuid_string,
+                name.into(),
+                title.into(),
+                level.into(),
+                compensation,
+                current_formatted,
+            );
+            database::add_person(new_person).await
+        }
     }
-}    
+}
