@@ -21,7 +21,7 @@ pub fn App() -> impl IntoView {
         <link rel="stylesheet" href="/style/output.css"/>
 
         // Document title
-        <Title text="Welcome to Leptos"/>
+        <Title text="Staff dashboard app"/>
 
         // App content
         <Router>
