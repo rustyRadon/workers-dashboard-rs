@@ -27,6 +27,8 @@ chrono = "0.4.42"
 num-format = "0.4.4"
 thiserror = "2.0.17"
 getrandom = { version = "0.3", features = ["wasm_js"] }
+dotenvy = { version = "0.15", optional = true }
+
 
 [features]
 csr = ["leptos/csr"]
@@ -40,6 +42,7 @@ ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
+  "dep:dotenvy",
 ]
 
 # Defines a size-optimized profile for the WASM bundle in release mode
