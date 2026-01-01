@@ -1,4 +1,5 @@
-pub mod db;
+
+pub mod components;
 pub mod models;
 pub mod server_functions;
 pub mod pages;
