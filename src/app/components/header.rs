@@ -9,16 +9,21 @@ const INPUT_STYLE_SELECTED: &str =
 
 #[component]
 pub fn Header() -> impl IntoView {
-    // Get the current location object
     let location = use_location();
     
+    Effect::new(move |_| {
+        leptos::logging::log!("Current path: {}", location.pathname.get());
+    });
 
-    let is_dashboard = Memo::new(move |_| location.pathname.get() == "/");
+    let is_dashboard = Memo::new(move |_| {
+        let path = location.pathname.get();
+        path == "/" || path.is_empty()
+    });
     let is_team = Memo::new(move |_| location.pathname.get() == "/team");
 
     view! {
-        <div class="flex mx-auto items-center w-full h-12 pt-8 px-20 fixed top-0">
-            <nav class="flex flex-row w-full max-w-[52rem] h-12">
+        <div class="flex mx-auto items-center justify-center w-full h-16 fixed top-0 bg-gray-800 z-50 shadow-md">
+            <nav class="flex flex-row items-center justify-center h-full">
 
                 <div class=move || nav_style(is_dashboard.get())>
                     <A href="/">"Dashboard"</A>
