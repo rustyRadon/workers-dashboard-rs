@@ -30,7 +30,7 @@ pub fn ShowPersonModal(
     };
 
     view! {
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#38000A]/60">
             <div class="bg-[#222222] border-t-8 border-red-500 p-8 w-full max-w-md text-white">
                 <h2 class="text-2xl font-bold mb-2">{person_view.name.clone()}</h2>
                 <p class="text-stone-400 mb-6">{person_view.title.clone()} " - " {person_view.level.clone()}</p>

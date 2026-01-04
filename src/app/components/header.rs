@@ -22,7 +22,7 @@ pub fn Header() -> impl IntoView {
     let is_team = Memo::new(move |_| location.pathname.get() == "/team");
 
     view! {
-        <div class="flex mx-auto items-center justify-center w-full h-16 fixed top-0 bg-gray-800 z-50 shadow-md">
+        <div class="flex mx-auto items-center justify-center w-full h-16 fixed top-0 bg-[#38000A] z-50 shadow-md">
             <nav class="flex flex-row items-center justify-center h-full">
 
                 <div class=move || nav_style(is_dashboard.get())>

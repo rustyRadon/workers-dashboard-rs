@@ -1,0 +1,89 @@
+🛠️ Project Stack & Dependencies
+The project is built using a modern Rust ecosystem focused on type safety and performance.
+
+Core Frameworks
+Leptos (v0.7): A full-stack, isomorphic Rust web framework.
+
+Actix-Web: The server-side runner (SSR) used to handle HTTP requests and Server Functions.
+
+SurrealDB: A multi-model graph database used for data persistence.
+
+Key Libraries
+surrealdb: The official driver for database interactions.
+
+charts_rs: Used for generating SVG-based charts (like the Staff Distribution bar chart).
+
+serde / serde_json: Handles serialization and deserialization of data structures.
+
+tailwind-css: Integrated via leptos_meta for styling using utility classes.
+
+uuid: For generating unique identifiers for person records.
+
+num_format: Used for formatting currency and large numbers on the dashboard.
+
+📂 Folder Structure & File Purpose
+Plaintext
+
+dashboard-app-rs/
+├── src/
+│   ├── main.rs                 # Entry point for the SSR server (Actix)
+│   ├── lib.rs                  # Root library for WASM/Hydration entry
+│   └── app/                    # Main application logic
+│       ├── mod.rs              # App module definitions
+│       ├── components/         # Reusable UI elements
+│       │   ├── dashboard_chart.rs # Logic for the SVG bar chart
+│       │   ├── dashboard_widget.rs # Individual stat cards
+│       │   └── add_person_modal.rs # Form pop-up for data entry
+│       ├── db/
+│       │   └── database.rs     # SurrealDB connection and CRUD operations
+│       ├── models/
+│       │   └── person.rs       # Data structures (Structs) for Person
+│       ├── server_functions/   # Leptos Server Functions ([server])
+│       │   └── persons.rs      # API bridges between Client and DB
+│       └── errors.rs           # Custom error types for the app
+├── style/
+│   └── main.css                # Tailwind entry and global styles
+├── Cargo.toml                  # Project manifest and dependencies
+└── .env                        # Local environment variables (DB credentials)
+1. src/main.rs
+The heart of the Server-Side Rendering (SSR). It initializes the Actix server, sets up Leptos routes, and listens for incoming connections on port 3000.
+
+2. src/app/models/person.rs
+Defines the Person struct. This model is shared between the frontend and backend, ensuring that data is valid on both sides of the network.
+
+3. src/app/db/database.rs
+Contains the "Raw" database logic. It uses a static connection pool to SurrealDB. This is where SELECT, CREATE, and DELETE queries are executed.
+
+4. src/app/server_functions/
+Contains code annotated with #[server]. These functions act as an automated API. When the frontend calls add_person(), Leptos automatically handles the POST request to the server, which then talks to the database.
+
+🎨 Visual Identity (Radon Theme)
+The project uses a custom color palette defined by the user (Radon Theme). Instead of standard Tailwind colors, the app utilizes these specific hex codes via arbitrary values:
+
+Dark Maroon (bg-[#38000A]): Main background and containers.
+
+Bright Red (bg-[#CD1C18]): Primary buttons, widgets, and accents.
+
+Deep Red (bg-[#9B1313]): Hover states and secondary bars in charts.
+
+Peach/Salmon (text-[#FFA896]): Highlight text, labels, and borders.
+
+🚀 How the System Works
+Hydration: When a user visits the site, the server sends a pre-rendered HTML page. The browser then "hydrates" it with WASM, making the buttons interactive.
+
+State Management: Leptos signals are used to keep the UI in sync. When a new person is added, the Resource for the list of people is refreshed.
+
+Database Flow: * Frontend: User clicks "Submit" in AddPersonModal.
+
+Server Function: The frontend calls the server function in persons.rs.
+
+Backend: The server function calls database.rs which performs the SurrealDB query.
+
+Result: The UI updates automatically based on the returned data.
+
+🛠️ Common Maintenance Commands
+Clean Build: cargo clean (Useful for fixing compiler cache errors).
+
+Run Development: cargo leptos watch (Hot-reloads the app on save).
+
+SurrealDB Start: surreal start --user Radon --pass [PASSWORD] memory (Starts a temporary in-memory database).

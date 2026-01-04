@@ -39,7 +39,7 @@ pub fn PersonRow(
             />
         </Show>
 
-        <div class="bg-[#283653] rounded px-10 py-5 mb-4 flex flex-row justify-between items-center text-white">
+        <div class="bg-[#38000A] rounded px-10 py-5 mb-4 flex flex-row justify-between items-center text-white">
             <div class="flex flex-col">
                 <p class="font-bold">{person_view.name.clone()}</p>
                 <p class="text-sm text-stone-400">{person_view.title.clone()}</p>

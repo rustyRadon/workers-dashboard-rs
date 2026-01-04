@@ -34,7 +34,7 @@ pub fn AddPersonModal(
     };
 
     view! {
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#38000A]/60">
             <div class="bg-[#222222] border-t-8 border-[#7734e7] p-8 w-full max-w-md">
                 <h2 class="text-white text-3xl mb-6">"Add Member"</h2>
                 <input type="text" placeholder="Name" class="w-full bg-[#333333] text-white p-3 mb-4" on:input=move |e| name.set(event_target_value(&e)) />
@@ -43,7 +43,7 @@ pub fn AddPersonModal(
                 <input type="text" placeholder="Comp" class="w-full bg-[#333333] text-white p-3 mb-6" on:input=move |e| comp.set(event_target_value(&e)) />
                 <div class="flex justify-end gap-4">
                     <button class="text-stone-400" on:click=move |_| set_if_show_modal.set(false)>"Cancel"</button>
-                    <button class="bg-[#7734e7] text-white px-6 py-2 rounded" on:click=on_click>"Add"</button>
+                    <button class="bg-[#38000A] text-white px-6 py-2 rounded" on:click=on_click>"Add"</button>
                 </div>
             </div>
         </div>

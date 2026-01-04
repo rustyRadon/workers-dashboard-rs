@@ -1,0 +1,30 @@
+thread 'rustc' panicked at /rustc-dev/56f24e00c62ec2db9a8b407e7aef532caaf71062/compiler/rustc_middle/src/query/on_disk_cache.rs:519:5:
+assertion `left == right` failed
+  left: 49
+ right: 1002111927320821928687967599834759150
+stack backtrace:
+   0:     0x732fa542f69b - <std[f3a57754886c7fb2]::backtrace::Backtrace>::create
+   1:     0x732fa542f5e5 - <std[f3a57754886c7fb2]::backtrace::Backtrace>::force_capture
+   2:     0x732fa4422177 - std[f3a57754886c7fb2]::panicking::update_hook::<alloc[1d6b3c33e0f4de11]::boxed::Box<rustc_driver_impl[6a7be9e1e9fa397f]::install_ice_hook::{closure#1}>>::{closure#0}
+   3:     0x732fa5441f22 - std[f3a57754886c7fb2]::panicking::panic_with_hook
+   4:     0x732fa5424678 - std[f3a57754886c7fb2]::panicking::panic_handler::{closure#0}
+   5:     0x732fa541b7e9 - std[f3a57754886c7fb2]::sys::backtrace::__rust_end_short_backtrace::<std[f3a57754886c7fb2]::panicking::panic_handler::{closure#0}, !>
+   6:     0x732fa542612d - __rustc[192c15a50bb3bba]::rust_begin_unwind
+   7:     0x732fa20931cc - core[8a6ed22ea881a8cb]::panicking::panic_fmt
+   8:     0x732fa3db2bf3 - core[8a6ed22ea881a8cb]::panicking::assert_failed_inner
+   9:     0x732fa5026c9e - core[8a6ed22ea881a8cb]::panicking::assert_failed::<u128, u128>
+  10:     0x732fa6fb7380 - <rustc_middle[d64d9de6cd50ee9e]::query::on_disk_cache::OnDiskCache>::new
+  11:     0x732fa6bdec7c - rustc_incremental[223afb5e9bf4e2fd]::persist::load::load_query_result_cache
+  12:     0x732fa6bdc2fb - rustc_interface[6e17731c7eb03393]::interface::run_compiler::<(), rustc_driver_impl[6a7be9e1e9fa397f]::run_compiler::{closure#0}>::{closure#1}
+  13:     0x732fa6b4928e - std[f3a57754886c7fb2]::sys::backtrace::__rust_begin_short_backtrace::<rustc_interface[6e17731c7eb03393]::util::run_in_thread_with_globals<rustc_interface[6e17731c7eb03393]::util::run_in_thread_pool_with_globals<rustc_interface[6e17731c7eb03393]::interface::run_compiler<(), rustc_driver_impl[6a7be9e1e9fa397f]::run_compiler::{closure#0}>::{closure#1}, ()>::{closure#0}, ()>::{closure#0}::{closure#0}, ()>
+  14:     0x732fa6b49060 - <std[f3a57754886c7fb2]::thread::lifecycle::spawn_unchecked<rustc_interface[6e17731c7eb03393]::util::run_in_thread_with_globals<rustc_interface[6e17731c7eb03393]::util::run_in_thread_pool_with_globals<rustc_interface[6e17731c7eb03393]::interface::run_compiler<(), rustc_driver_impl[6a7be9e1e9fa397f]::run_compiler::{closure#0}>::{closure#1}, ()>::{closure#0}, ()>::{closure#0}::{closure#0}, ()>::{closure#1} as core[8a6ed22ea881a8cb]::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}
+  15:     0x732fa6b47438 - <std[f3a57754886c7fb2]::sys::thread::unix::Thread>::new::thread_start
+  16:     0x732fa0494ac3 - start_thread
+                               at ./nptl/pthread_create.c:442:8
+  17:     0x732fa05268c0 - __GI___clone3
+                               at ./misc/../sysdeps/unix/sysv/linux/x86_64/clone3.S:81:0
+  18:                0x0 - <unknown>
+
+
+rustc version: 1.94.0-nightly (56f24e00c 2025-12-29)
+platform: x86_64-unknown-linux-gnu

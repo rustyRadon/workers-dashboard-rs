@@ -26,7 +26,7 @@ pub fn App() -> impl IntoView {
 
         <Router>
             <Header/>
-            <main class="pt-20 bg-gray-900 min-h-screen">
+            <main class="pt-20 Peach/Salmon	bg-[#9B1313] min-h-screen">
                 <Routes fallback=move || "Not found.">
                     <Route path=StaticSegment("") view=HomePage/>
                     <Route path=StaticSegment("team") view=TeamPage/>

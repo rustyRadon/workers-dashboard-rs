@@ -36,7 +36,7 @@ pub fn TeamPage() -> impl IntoView {
                 <div class="flex flex-row w-full max-w-[52rem] items-center">
                     <div class="pr-4 text-xl">"Members"</div>
                     <hr class="flex-grow border-stone-700 mx-4" />
-                    <button on:click=move |_| if_show_modal.set(true) class="bg-[#7734e7] px-8 py-2 rounded">"Add"</button>
+                    <button on:click=move |_| if_show_modal.set(true) class="bg-[#38000A] px-8 py-2 rounded">"Add"</button>
                 </div>
 
                 <Suspense fallback=move || view! { <p>"Loading..."</p> }>

@@ -10,7 +10,7 @@ pub fn DashboardHeader() -> impl IntoView {
 
     view! {
         <div class="flex flex-col mt-28 h-48 w-full max-w-[53rem] mx-auto items-center justify-center px-2">
-            <div class="w-full flex flex-row bg-[#34508c] rounded h-full px-10 py-10">
+            <div class="w-full flex flex-row bg-[#38000A] rounded h-full px-10 py-10">
                 <div class="w-1/2 h-full flex flex-col">
                     <div class="text-white">{display_date}</div>
                     <div class="text-white text-6xl pt-2">"Team Report"</div>
