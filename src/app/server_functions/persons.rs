@@ -2,13 +2,14 @@
 use crate::app::models::person::{Person, AddPersonRequest, EditPersonRequest, DeletePersonRequest};
 use crate::app::errors::{ErrorMessage, PersonError}; 
 use leptos::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[server]
+#[server(GetPersons, "/api")]
 pub async fn get_persons() -> Result<Vec<Person>, ServerFnError> {
     Ok(retrieve_all_persons().await)
 }
 
-#[server]
+#[server(AddPerson, "/api")]
 pub async fn add_person(add_person_request: AddPersonRequest) -> Result<Person, ServerFnError> {
     match add_new_person(
         add_person_request.name,
@@ -16,37 +17,27 @@ pub async fn add_person(add_person_request: AddPersonRequest) -> Result<Person, 
         add_person_request.level,
         add_person_request.compensation,
     ).await {
-        Some(created_person) => Ok(created_person),
-        None => Err(ServerFnError::new("Error in creating person!")),
+        Some(p) => Ok(p),
+        None => Err(ServerFnError::new("Database failure during person creation")),
     }
 }
 
-#[server]
-pub async fn delete_person(
-    delete_person_request: DeletePersonRequest,
-) -> Result<Person, ServerFnError> {
+#[server(DeletePerson, "/api")]
+pub async fn delete_person(delete_person_request: DeletePersonRequest) -> Result<Person, ServerFnError> {
     match delete_team_person(delete_person_request.uuid).await {
-        Ok(Some(person)) => Ok(person),
-        Ok(None) => Err(ServerFnError::new(ErrorMessage::create(PersonError::PersonDeleteFailure))),
-        Err(e) => Err(ServerFnError::new(ErrorMessage::create(e))),
+        Ok(Some(p)) => Ok(p),
+        _ => Err(ServerFnError::new("Delete failed")),
     }
 }
 
-#[server]
+#[server(EditPerson, "/api")]
 pub async fn edit_person(edit_person_request: EditPersonRequest) -> Result<Person, ServerFnError> {
-    match edit_team_person(
-        edit_person_request.uuid,
-        edit_person_request.title,
-        edit_person_request.level,
-        edit_person_request.compensation,
-    ).await {
-        Ok(Some(person)) => Ok(person),
-        Ok(None) => Err(ServerFnError::new(ErrorMessage::create(PersonError::PersonUpdateFailure))),
-        Err(e) => Err(ServerFnError::new(ErrorMessage::create(e))),
+    match edit_team_person(edit_person_request.uuid, edit_person_request.title, edit_person_request.level, edit_person_request.compensation).await {
+        Ok(Some(p)) => Ok(p),
+        _ => Err(ServerFnError::new("Edit failed")),
     }
 }
 
-// --- SSR Implementation ---
 #[cfg(feature = "ssr")]
 pub async fn retrieve_all_persons() -> Vec<Person> {
     use crate::app::db::database;
@@ -58,10 +49,7 @@ pub async fn add_new_person(name: String, title: String, level: String, compensa
     use crate::app::db::database;
     use chrono::Local;
     use uuid::Uuid;
-
-    let uuid = Uuid::new_v4().to_string();
-    let current_formatted = Local::now().to_string();
-    let new_person = Person::new(uuid, name, title, level, compensation, current_formatted);
+    let new_person = Person::new(Uuid::new_v4().to_string(), name, title, level, compensation, Local::now().to_string());
     database::add_person(new_person).await
 }
 
@@ -82,6 +70,6 @@ pub async fn retrieve_all_persons() -> Vec<Person> { vec![] }
 #[cfg(not(feature = "ssr"))]
 pub async fn add_new_person(_: String, _: String, _: String, _: i32) -> Option<Person> { None }
 #[cfg(not(feature = "ssr"))]
-pub async fn delete_team_person(_: String) -> Result<Option<Person>, PersonError> { unimplemented!() }
+pub async fn delete_team_person(_: String) -> Result<Option<Person>, PersonError> { Err(PersonError::PersonDeleteFailure) }
 #[cfg(not(feature = "ssr"))]
-pub async fn edit_team_person(_: String, _: String, _: String, _: i32) -> Result<Option<Person>, PersonError> { unimplemented!() }
+pub async fn edit_team_person(_: String, _: String, _: String, _: i32) -> Result<Option<Person>, PersonError> { Err(PersonError::PersonUpdateFailure) }

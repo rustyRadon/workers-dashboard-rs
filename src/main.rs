@@ -13,14 +13,20 @@ async fn main() -> std::io::Result<()> {
     let addr = conf.leptos_options.site_addr;
 
     HttpServer::new(move || {
-        let routes = generate_route_list(App);
         let leptos_options = &conf.leptos_options;
         let site_root = leptos_options.site_root.clone().to_string();
+        // Generate the routes inside the factory
+        let routes = generate_route_list(App);
 
         App::new()
+            // 1. Handle Server Functions
+            .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
+            // 2. Serve WASM and JS
             .service(Files::new("/pkg", format!("{site_root}/pkg")))
+            // 3. Serve Assets
             .service(Files::new("/assets", &site_root))
             .service(favicon)
+            // 4. Corrected Leptos Routes signature
             .leptos_routes(routes, {
                 let leptos_options = leptos_options.clone();
                 move || {
@@ -30,9 +36,7 @@ async fn main() -> std::io::Result<()> {
                             <head>
                                 <meta charset="utf-8"/>
                                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                                // This injects the WASM and JS needed to make the page interactive
                                 <HydrationScripts options=leptos_options.clone()/>
-                                // This injects the <Stylesheet/> and <Title/> from your App component
                                 <MetaTags/>
                             </head>
                             <body>
@@ -54,7 +58,6 @@ async fn main() -> std::io::Result<()> {
 async fn favicon(
     leptos_options: actix_web::web::Data<leptos::config::LeptosOptions>,
 ) -> actix_web::Result<actix_files::NamedFile> {
-    let leptos_options = leptos_options.into_inner();
     let site_root = &leptos_options.site_root;
     Ok(actix_files::NamedFile::open(format!("{site_root}/favicon.ico"))?)
 }
