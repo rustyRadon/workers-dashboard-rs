@@ -3,12 +3,13 @@ pub mod pages;
 pub use pages::{HomePage, TeamPage};
 pub mod models;
 pub mod server_functions;
+pub mod errors;
+pub mod db;
 
 
 use crate::app::components::Header; 
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Title};
-//use leptos_meta::Stylesheet;
 use leptos_router::{
     components::{Route, Router, Routes},
     StaticSegment, WildcardSegment,

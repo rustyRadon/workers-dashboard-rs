@@ -1,34 +1,26 @@
+use cfg_if::cfg_if;
+
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use dotenvy::dotenv;
         use std::env;
-        use crate::app::models::Person;
+        use crate::app::models::person::Person;
         use surrealdb::engine::remote::ws::{Client, Ws};
         use surrealdb::opt::auth::Root;
         use surrealdb::{Error, Surreal};
         use once_cell::sync::Lazy;
+        use serde_json::json;
 
         static DB: Lazy<Surreal<Client>> = Lazy::new(Surreal::init);
-        static CONNECTION_INITIALIZED: Lazy<std::sync::OnceLock<()>> = Lazy::new(|| std::sync::OnceLock::new());
-
-        fn env_var(key: &str) -> Result<String, Error> {
-            env::var(key).map_err(|_| Error::Db(format!("Missing env var: {}", key)))
-        }
 
         pub async fn open_db_connection() -> Result<(), Error> {
-            CONNECTION_INITIALIZED.get_or_init(|| {
-                dotenv().ok();
-            });
+            dotenv().ok();
             
-            if DB.status() == surrealdb::engine::remote::ws::Status::Connected {
-                return Ok(());
-            }
-
-            let url = env_var("SURREAL_URL")?;
-            let user = env_var("SURREAL_USER")?;
-            let pass = env_var("SURREAL_PASS")?;
-            let ns = env_var("SURREAL_NS")?;
-            let db = env_var("SURREAL_DB")?;
+            let url = env::var("SURREAL_URL").map_err(|e| Error::Db(surrealdb::error::Db::Thrown(e.to_string())))?;
+            let user = env::var("SURREAL_USER").map_err(|e| Error::Db(surrealdb::error::Db::Thrown(e.to_string())))?;
+            let pass = env::var("SURREAL_PASS").map_err(|e| Error::Db(surrealdb::error::Db::Thrown(e.to_string())))?;
+            let ns = env::var("SURREAL_NS").map_err(|e| Error::Db(surrealdb::error::Db::Thrown(e.to_string())))?;
+            let db = env::var("SURREAL_DB").map_err(|e| Error::Db(surrealdb::error::Db::Thrown(e.to_string())))?;
 
             DB.connect::<Ws>(&url).await?;
 
@@ -43,48 +35,39 @@ cfg_if! {
         }
 
         pub async fn get_all_persons() -> Option<Vec<Person>> {
-            if let Err(_) = open_db_connection().await {
-                return None;
-            }
-            
-            let result = DB.query("SELECT * FROM person ORDER BY joined_date DESC")
-                .await;
-            
-            match result {
-                Ok(mut response) => {
-                    let persons: Result<Vec<Person>, _> = response.take(0);
-                    match persons {
-                        Ok(found_persons) => Some(found_persons),
-                        Err(e) => {
-                            eprintln!("Error taking persons: {:?}", e);
-                            None
-                        }
-                    }
-                }
-                Err(e) => {
-                    eprintln!("Query error: {:?}", e);
-                    None
-                }
-            }
+            let _ = open_db_connection().await;
+            let mut response = DB.query("SELECT * FROM person ORDER BY joined_date DESC")
+                .await.ok()?;
+            response.take::<Vec<Person>>(0).ok()
         }
 
         pub async fn add_person(new_person: Person) -> Option<Person> {
-            if open_db_connection().await.is_err() {
-                return None;
-            }
-
-            let result = DB
-                .create(("person", new_person.uuid.clone()))
+            let _ = open_db_connection().await;
+            DB.create::<Option<Person>>(("person", new_person.uuid.clone()))
                 .content(new_person)
-                .await;
+                .await
+                .ok()
+                .flatten()
+        }
 
-            match result {
-                Ok(created_person) => created_person, 
-                Err(e) => {
-                    eprintln!("Error creating person: {:?}", e);
-                    None
-                }
-            }
+        pub async fn delete_person(uuid: String) -> Result<Option<Person>, crate::app::errors::PersonError> {
+            open_db_connection().await.map_err(|_| crate::app::errors::PersonError::PersonDeleteFailure)?;
+            DB.delete::<Option<Person>>(("person", uuid))
+                .await
+                .map_err(|_| crate::app::errors::PersonError::PersonDeleteFailure)
+        }
+
+        pub async fn update_person(uuid: String, title: String, level: String, compensation: i32) -> Result<Option<Person>, crate::app::errors::PersonError> {
+            open_db_connection().await.map_err(|_| crate::app::errors::PersonError::PersonUpdateFailure)?;
+            
+            DB.update::<Option<Person>>(("person", uuid))
+                .merge(json!({
+                    "title": title,
+                    "level": level,
+                    "compensation": compensation
+                }))
+                .await
+                .map_err(|_| crate::app::errors::PersonError::PersonUpdateFailure)
         }
     }
 }

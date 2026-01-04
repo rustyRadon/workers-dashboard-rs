@@ -1,4 +1,4 @@
-use leptos::prelude::*; // Use 0.8 prelude
+use leptos::prelude::*;
 use std::time::Duration;
 
 const TOAST_PARENT_STYLE: &str = "flex flex-row top-0 h-16 w-full max-w-[61rem] \
@@ -12,25 +12,30 @@ const TOAST_PARENT_APPEAR_STYLE: &str = "flex flex-row top-0 h-16 w-full max-w-[
 const TOAST_STYLE: &str = "flex w-96 h-16 bg-[#333333] rounded px-10 py-4 \
     text-white transition-all duration-1000 ease-in-out items-center";
 
+#[derive(Clone, Debug, PartialEq)]
 pub enum ToastMessageType {
     NewMemberAdded,
     MemberDeleted,
     MemberUpdated,
 }
 
-pub type ToastMessage = String;
-
-pub trait ToastTrait { // Renamed trait to avoid conflict with component name
-    fn create(toast_message_type: ToastMessageType) -> ToastMessage;
+#[derive(Clone, Debug, PartialEq)]
+pub struct ToastMessage {
+    pub content: String,
 }
 
-impl ToastTrait for ToastMessage {
-    fn create(toast_message_type: ToastMessageType) -> ToastMessage {
-        match toast_message_type {
-            ToastMessageType::NewMemberAdded => String::from("New member added"),
-            ToastMessageType::MemberDeleted => String::from("Member deleted"),
-            ToastMessageType::MemberUpdated => String::from("Member updated"),
-        }
+impl ToastMessage {
+    pub fn new() -> Self {
+        Self { content: String::new() }
+    }
+
+    pub fn create(toast_message_type: ToastMessageType) -> Self {
+        let msg = match toast_message_type {
+            ToastMessageType::NewMemberAdded => "New member added",
+            ToastMessageType::MemberDeleted => "Member deleted",
+            ToastMessageType::MemberUpdated => "Member updated",
+        };
+        Self { content: msg.to_string() }
     }
 }
 
@@ -41,10 +46,8 @@ pub fn Toast(
     set_if_appear: WriteSignal<bool>,
 ) -> impl IntoView {
     
-    // In 0.8, Effect replaces create_effect
     Effect::new(move |_| {
         if if_appear.get() {
-            // set_timeout is still fine, or use leptos::prelude::set_timeout
             set_timeout(
                 move || {
                     set_if_appear.set(false);
@@ -60,7 +63,7 @@ pub fn Toast(
             else { TOAST_PARENT_STYLE }
         }>
             <div class=TOAST_STYLE>
-                {move || toast_message.get()}
+                {move || toast_message.get().content}
             </div>
         </div>
     }

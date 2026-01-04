@@ -1,0 +1,8 @@
+#[component]
+pub fn PersonRow(
+    person: Rc<Person>,
+    // Use the explicit Resource type that includes the default codec
+    person_resource: Resource<Result<Vec<Person>, ServerFnError>>, 
+    set_if_show_toast: WriteSignal<bool>,
+    set_toast_message: WriteSignal<ToastMessage>,
+) -> impl IntoView { ... }
