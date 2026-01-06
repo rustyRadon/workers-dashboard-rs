@@ -15,18 +15,13 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         let leptos_options = &conf.leptos_options;
         let site_root = leptos_options.site_root.clone().to_string();
-        // Generate the routes inside the factory
         let routes = generate_route_list(App);
 
         App::new()
-            // 1. Handle Server Functions
             .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
-            // 2. Serve WASM and JS
             .service(Files::new("/pkg", format!("{site_root}/pkg")))
-            // 3. Serve Assets
             .service(Files::new("/assets", &site_root))
             .service(favicon)
-            // 4. Corrected Leptos Routes signature
             .leptos_routes(routes, {
                 let leptos_options = leptos_options.clone();
                 move || {

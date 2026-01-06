@@ -16,7 +16,7 @@ pub fn DashboardHeader() -> impl IntoView {
                     <div class="text-white text-6xl pt-2">"Team Report"</div>
                 </div>
                 <div class="w-1/2">
-                    <img src="assets/image_1.png" class="w-[442px] -mt-28" />
+                    <img src="assets/image_1.png" class="w-[210px] -mt-40 -ml-20" />
                 </div>
             </div>
         </div>
