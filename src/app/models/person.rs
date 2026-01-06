@@ -14,6 +14,7 @@ pub struct Person {
     #[validate(range(min = 2000, max = 99999))]
     pub compensation: i32,
     pub joined_date: String,
+    pub reports_to: Option<String>, // Stores the UUID of the manager
 }
 
 impl Person {
@@ -24,6 +25,7 @@ impl Person {
         level: String,
         compensation: i32,
         joined_date: String,
+        reports_to: Option<String>,
     ) -> Self {
         Self {
             uuid,
@@ -32,6 +34,7 @@ impl Person {
             level,
             compensation,
             joined_date,
+            reports_to,
         }
     }
 }
@@ -47,15 +50,17 @@ pub struct AddPersonRequest {
     pub level: String,
     #[validate(range(min = 2000, max = 99999))]
     pub compensation: i32,
+    pub reports_to: Option<String>, 
 }
 
 impl AddPersonRequest {
-    pub fn new(name: String, title: String, level: String, compensation: i32) -> Self {
+    pub fn new(name: String, title: String, level: String, compensation: i32, reports_to: Option<String>) -> Self {
         Self {
             name,
             title,
             level,
             compensation,
+            reports_to,
         }
     }
 }
@@ -71,20 +76,22 @@ pub struct EditPersonRequest {
     pub level: String,
     #[validate(range(min = 2000, max = 99999))]
     pub compensation: i32,
+    pub reports_to: Option<String>, // Added so you can move people between managers
 }
 
 impl EditPersonRequest {
-    pub fn new(uuid: String, title: String, level: String, compensation: i32) -> Self {
+    pub fn new(uuid: String, title: String, level: String, compensation: i32, reports_to: Option<String>) -> Self {
         Self {
             uuid,
             title,
             level,
             compensation,
+            reports_to,
         }
     }
 }
 
-/// Request structure for deleting a member
+
 #[derive(Debug, Validate, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct DeletePersonRequest {
     #[validate(length(min = 1, message = "uuid is required"))]
